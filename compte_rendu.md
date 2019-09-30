@@ -43,4 +43,8 @@ Pour activer le compte u1, il faut utiliser la commande ``passwd u1``
 Il faut initialiser un nouveau mot de passe. 
 Il est maintenant possible de se connecter.
 
+#### 
+
+
+
 
