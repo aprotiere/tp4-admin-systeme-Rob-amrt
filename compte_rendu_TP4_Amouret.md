@@ -80,4 +80,69 @@ nobody est le nom conventionnel d'un compte d'utilisateur à qui aucun fichier n
 Le temps par défaut est 15 minute.
 La commande pour forcer sudo à oublier son mot de passe est `sudo -k`
 
+## Exercice 2. Gestion des permissions
+#### • Dans votre $HOME, créez un dossier test, et dans ce dossier un fichier fichier contenant quelques lignes de texte. Quels sont les droits sur test et fichier ?
+``mkdir Test && touch Fichier /home/Test``
 
+#### • Retirez tous les droits sur ce fichier (même pour vous), puis essayez de le modifier et de l’afficher en tant que root. Conclusion ?
+``chmod 000 Fichier`` Il est possible de l'éditer car je suis en root.
+
+#### • Redonnez vous les droits en écriture et exécution sur fichier puis exécutez la commande echo "echo Hello" > fichier. On a vu lors des TP précédents que cette commande remplace le contenu d’un fichier s’il existe déjà. Que peut-on dire au sujet des droits ?
+``chmod 300 Fichier``
+``echo "echo Hello" > Fichier``
+
+#### • Essayez d’exécuter le fichier. Est-ce que cela fonctionne ? Et avec sudo ? Expliquez
+Ça ne va pas marcher car on a pas les droits d’exécution. Cependant en Root ça va marcher
+
+#### • Placez-vous dans le répertoire test, et retirez-vous le droit en lecture pour ce répertoire. Listez le contenu du répertoire, puis exécutez ou affichez le contenu du fichier fichier. Qu’en déduisez-vous ? Rétablissez le droit en lecture sur test
+```sudo chmod u-r ../test
+ls 
+cannot open directory '.': Permission denied
+./fichier 
+bash: ./fichier: Permission denied
+``` 
+#### • Créez dans test un fichier nouveau ainsi qu’un répertoire sstest. Retirez au fichier nouveau et au répertoire test le droit en écriture. Tentez de modifier le fichier nouveau. Rétablissez ensuite le droit en écriture au répertoire test. Tentez de modifier le fichier nouveau, puis de le supprimer. Que pouvezvous déduire de toutes ces manipulations ?
+```
+nano nouveau
+mkdir sstest
+chmod u-w nouveau
+chmod u-w ../test
+nano nouveau
+[ Error writing nouveau: Permission denied ]
+chmod u+w ../test
+nano nouveau
+[ Error writing nouveau: Permission denied ] 
+rm nouveau
+rm: remove write-protected regular file 'nouveau'? yes
+ls fichier  sstest
+```
+Il n'y a pas d'héritage de droits des dossiers pour les fichiers contenu à l'intérieur.
+
+#### • Positionnez vous dans votre répertoire personnel, puis retirez le droit en exécution du répertoire test. Tentez de créer, supprimer, ou modifier un fichier dans le répertoire test, de vous y déplacer, d’en lister le contenu, etc…Qu’en déduisez vous quant au sens du droit en exécution pour les répertoires ?
+On ne peut rien faire, le droit d'exécution sur un Dossier est primordial si l'on souhaite travailler à l'intérieur.
+
+#### • Rétablissez le droit en exécution du répertoire test. Positionnez vous dans ce répertoire et retirez lui à nouveau le droit d’exécution. Essayez de créer, supprimer et modifier un fichier dans le répertoire test, de vous déplacer dans ssrep, de lister son contenu. Qu’en concluez-vous quant à l’influence des droits que l’on possède sur le répertoire courant ? Peut-on retourner dans le répertoire parent avec ”cd ..” ? Pouvez-vous donner une explication ?
+La modification des droits s'applique instantanément, même si l'on est à l'intérieur du dossier en question, si le droit d'exécution est retiré, il est plus possible de faire quoi que ce soit.
+
+#### • Rétablissez le droit en exécution du répertoire test. Attribuez au fichier fichier les droits suffisants pour qu’une autre personne de votre groupe puisse y accéder en lecture, mais pas en écriture.
+La commande ``chmod 740``
+
+#### • Définissez un umask très restrictif qui interdit à quiconque à part vous l’accès en lecture ou en écriture, ainsi que la traversée de vos répertoires. Testez sur un nouveau fichier et un nouveau répertoire.
+Umask : 066
+
+#### • Définissez un umask très permissif qui autorise tout le monde à lire vos fichiers et traverser vos rép
+Umask 022
+
+#### • Définissez un umask équilibré qui vous autorise un accès complet et autorise un accès en lecture aux membres de votre groupe. Testez sur un nouveau fichier et un nouveau répertoire.
+Umask : 037
+
+#### • Transcrivez les commandes suivantes de la notation classique à la notation octale ou vice-versa (vous pourrez vous aider de la commande stat pour valider vos réponses) : 
+- chmod u=rx,g=wx,o=r fic  = ``534``
+- chmod uo+w,g-rx fic en sachant que les droits initiaux de fic sont r--r-x--- = ``602``
+- chmod 653 fic en sachant que les droits initiaux de fic sont 711 = ``rw-r-x-wx``
+- chmod u+x,g=w,o-r fic en sachant que les droits initiaux de fic sont r--r-x--- = ``570``
+
+#### • Affichez les droits sur le programme passwd. Que remarquez-vous ? En affichant les droits du fichier /etc/passwd, pouvez-vous justifier les permissions sur le programme passwd ?
+
+``root@serveur:/home/serveur# ls -l /etc/passwd
+-rw-r--r-- 1 root root 1781 sept. 30 15:04 /etc/passwd``
